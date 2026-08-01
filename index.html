@@ -1,0 +1,484 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Thiệp Cưới Tuấn Long & Phương Thảo</title>
+  <style>
+    :root {
+      --blue: #003977;
+      --blue-light: #137fd8;
+      --pink: #f175ad;
+      --white: #ffffff;
+      --field: #f5f9ff;
+      --field-border: #d7e7f8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--white);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      overflow-x: hidden;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .page {
+      position: relative;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      line-height: 0;
+      background: var(--white);
+    }
+
+    .page > img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .gif-page {
+      overflow: hidden;
+      background: var(--white);
+    }
+
+    .gif-page img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .rsvp-page {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 2250 / 3505;
+      min-height: 760px;
+      overflow: hidden;
+      color: var(--white);
+      background: var(--blue);
+      line-height: 1;
+    }
+
+    .rsvp-page::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.16;
+      pointer-events: none;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px);
+      background-size: 10px 10px;
+    }
+
+    .rsvp-page::after {
+      content: "";
+      position: absolute;
+      right: -8%;
+      top: 9%;
+      width: 42%;
+      height: 17%;
+      border: 2px solid rgba(255, 255, 255, 0.28);
+      border-radius: 50%;
+      transform: rotate(-15deg);
+      pointer-events: none;
+    }
+
+    .rsvp-card {
+      position: absolute;
+      left: 10.8%;
+      top: 10.7%;
+      width: 78.4%;
+      height: 78.2%;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      z-index: 1;
+    }
+
+    .rsvp-heading {
+      margin: 0;
+      color: var(--white);
+      font-size: 40px;
+      line-height: 1.05;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .rsvp-copy {
+      margin: 22px auto 0;
+      max-width: 720px;
+      color: rgba(142, 190, 225, 0.68);
+      font-family: Cambria, "Times New Roman", serif;
+      font-size: clamp(13px, 2.35vw, 28px);
+      line-height: 1.18;
+      font-weight: 400;
+      letter-spacing: 0;
+      font-kerning: normal;
+      text-rendering: geometricPrecision;
+      text-align: center;
+    }
+
+    .rsvp-question {
+      margin: 58px 0 18px;
+      color: var(--white);
+      font-size: 30px;
+      line-height: 1.25;
+      font-weight: 700;
+    }
+
+    .rsvp-options {
+      display: grid;
+      gap: 20px;
+    }
+
+    .rsvp-option {
+      position: relative;
+      display: flex;
+      align-items: center;
+      min-height: 82px;
+      padding: 0 30px 0 86px;
+      border-radius: 999px;
+      color: var(--blue);
+      background: var(--white);
+      font-size: 27px;
+      line-height: 1.3;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 12px 24px rgba(0, 24, 59, 0.16);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .rsvp-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .rsvp-option span::before {
+      content: "";
+      position: absolute;
+      left: 30px;
+      top: 50%;
+      width: 30px;
+      height: 30px;
+      border: 3px solid var(--blue);
+      border-radius: 50%;
+      transform: translateY(-50%);
+      background: var(--white);
+    }
+
+    .rsvp-option span::after {
+      content: "";
+      position: absolute;
+      left: 40px;
+      top: 50%;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      transform: translateY(-50%) scale(0);
+      background: var(--pink);
+      transition: transform 120ms ease;
+    }
+
+    .rsvp-option:has(input:checked) {
+      box-shadow: 0 0 0 5px rgba(241, 117, 173, 0.75), 0 14px 28px rgba(0, 24, 59, 0.18);
+    }
+
+    .rsvp-option:has(input:checked) span::after {
+      transform: translateY(-50%) scale(1);
+    }
+
+    .rsvp-fields {
+      display: grid;
+      gap: 20px;
+      margin-top: 46px;
+    }
+
+    .rsvp-field-label {
+      display: block;
+      color: var(--white);
+      font-size: 27px;
+      line-height: 1.15;
+      font-weight: 700;
+    }
+
+    .rsvp-input,
+    .rsvp-select {
+      display: block;
+      width: 100%;
+      min-height: 86px;
+      margin-top: 13px;
+      padding: 0 34px;
+      border: 2px solid var(--field-border);
+      border-radius: 999px;
+      outline: 0;
+      background: var(--field);
+      color: var(--blue);
+      font: 700 27px/1 Arial, Helvetica, sans-serif;
+      box-shadow: 0 12px 24px rgba(0, 24, 59, 0.12);
+    }
+
+    .rsvp-input::placeholder {
+      color: rgba(0, 57, 119, 0.52);
+    }
+
+    .rsvp-input:focus,
+    .rsvp-select:focus {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 5px rgba(241, 117, 173, 0.26), 0 12px 24px rgba(0, 24, 59, 0.12);
+    }
+
+    .rsvp-actions {
+      display: grid;
+      gap: 20px;
+      margin-top: 44px;
+    }
+
+    .rsvp-button {
+      width: 100%;
+      min-height: 88px;
+      border: 0;
+      border-radius: 999px;
+      color: var(--white);
+      font: 800 29px/1 Arial, Helvetica, sans-serif;
+      cursor: pointer;
+      box-shadow: 0 14px 28px rgba(0, 24, 59, 0.22);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .rsvp-button.confirm {
+      background: linear-gradient(180deg, var(--blue-light), #0b64b1);
+    }
+
+    .rsvp-button.gift {
+      background: linear-gradient(180deg, var(--pink), #da5c99);
+    }
+
+    .rsvp-button:active {
+      transform: translateY(1px);
+    }
+
+    .rsvp-thanks {
+      margin: 34px auto 0;
+      max-width: 760px;
+      color: var(--white);
+      font-size: 27px;
+      line-height: 1.45;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .rsvp-status {
+      min-height: 28px;
+      margin-top: 16px;
+      color: var(--white);
+      font-size: 20px;
+      line-height: 1.35;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    @media (max-width: 680px) {
+      .rsvp-page {
+        min-height: 820px;
+      }
+
+      .rsvp-card {
+        left: 8%;
+        top: 7%;
+        width: 84%;
+        height: 86%;
+      }
+
+      .rsvp-heading {
+        font-size: 24px;
+      }
+
+      .rsvp-copy {
+        margin-top: 14px;
+        font-size: 13px;
+        line-height: 1.2;
+      }
+
+      .rsvp-question {
+        margin-top: 34px;
+        font-size: 18px;
+      }
+
+      .rsvp-options,
+      .rsvp-fields,
+      .rsvp-actions {
+        gap: 14px;
+      }
+
+      .rsvp-option {
+        min-height: 56px;
+        padding: 0 18px 0 56px;
+        font-size: 15px;
+      }
+
+      .rsvp-option span::before {
+        left: 20px;
+        width: 20px;
+        height: 20px;
+        border-width: 2px;
+      }
+
+      .rsvp-option span::after {
+        left: 27px;
+        width: 10px;
+        height: 10px;
+      }
+
+      .rsvp-fields {
+        margin-top: 28px;
+      }
+
+      .rsvp-field-label {
+        font-size: 16px;
+      }
+
+      .rsvp-input,
+      .rsvp-select {
+        min-height: 56px;
+        margin-top: 8px;
+        padding: 0 20px;
+        font-size: 16px;
+      }
+
+      .rsvp-actions {
+        margin-top: 28px;
+      }
+
+      .rsvp-button {
+        min-height: 58px;
+        font-size: 17px;
+      }
+
+      .rsvp-thanks {
+        margin-top: 20px;
+        font-size: 15px;
+      }
+
+      .rsvp-status {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main aria-label="Thiệp cưới">
+    <section class="page gif-page" id="page-1" aria-label="Trang mở thiệp">
+      <img src="invitation-opening.gif" alt="Mở thiệp cưới">
+    </section>
+
+    <section class="page" id="page-2" aria-label="Trang 2 - lời mời">
+      <img src="invitation-page-2.png" alt="Trang đầu thiệp cưới">
+    </section>
+
+    <section class="page" id="page-3" aria-label="Trang 3 - thông tin lễ cưới">
+      <img src="invitation-page-3.png" alt="Thông tin lễ thành hôn">
+    </section>
+
+    <section class="rsvp-page" id="page-4" aria-label="Trang 4 - xác nhận tham dự">
+      <form class="rsvp-card" id="rsvpForm">
+        <p class="rsvp-copy">Hãy xác nhận sự có mặt của bạn để chúng mình<br>chuẩn bị đón tiếp một cách chu đáo nhất.</p>
+
+        <p class="rsvp-question">Bạn sẽ tham dự chứ?</p>
+        <div class="rsvp-options">
+          <label class="rsvp-option">
+            <input type="radio" name="attendance" value="Có, tôi sẽ tham dự" checked>
+            <span>Có, tôi sẽ tham dự</span>
+          </label>
+
+          <label class="rsvp-option">
+            <input type="radio" name="attendance" value="Tôi bận, rất tiếc không thể tham dự.">
+            <span>Tôi bận, rất tiếc không thể tham dự.</span>
+          </label>
+        </div>
+
+        <div class="rsvp-fields">
+          <label class="rsvp-field-label">
+            Họ và tên
+            <input class="rsvp-input" type="text" name="guestName" autocomplete="name" placeholder="Nhập tên của bạn">
+          </label>
+
+          <label class="rsvp-field-label">
+            Số lượng người tham dự
+            <select class="rsvp-select" name="guestCount">
+              <option value="1 người">1 người</option>
+              <option value="2 người">2 người</option>
+              <option value="3 người">3 người</option>
+              <option value="4 người">4 người</option>
+              <option value="5 người">5 người</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="rsvp-actions">
+          <button class="rsvp-button confirm" type="submit">Gửi xác nhận</button>
+          <button class="rsvp-button gift" type="button">Gửi mừng cưới</button>
+        </div>
+
+        <p class="rsvp-thanks">Cảm ơn bạn đã dành tình cảm cho chúng mình!</p>
+        <div class="rsvp-status" id="rsvpStatus" role="status" aria-live="polite"></div>
+      </form>
+    </section>
+  </main>
+
+    <script>
+    window.addEventListener("load", () => {
+      window.scrollTo(0, 0);
+      window.setTimeout(() => {
+        document.getElementById("page-2").scrollIntoView({ block: "start", behavior: "smooth" });
+      }, 3100);
+    });
+    const form = document.getElementById("rsvpForm");
+    const rsvpStatus = document.getElementById("rsvpStatus");
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(form));
+      localStorage.setItem("wedding-rsvp", JSON.stringify(data));
+      rsvpStatus.textContent = data.guestName.trim() ? "Đã lưu xác nhận tham dự." : "Vui lòng nhập tên của bạn.";
+    });
+
+    document.querySelector(".rsvp-button.gift").addEventListener("click", () => {
+      rsvpStatus.textContent = "Đã chọn gửi mừng cưới.";
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
