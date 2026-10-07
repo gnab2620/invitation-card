@@ -1,0 +1,377 @@
+:root {
+  --page-width: 430px;
+  --canvas-width: 2331;
+  --canvas-height: 14892;
+  --album-left: 14.9721%;
+  --album-top: 54.8469%;
+  --album-width: 72.5%;
+  --album-aspect: 880 / 1248;
+  --album-photo-left: 5.4545%;
+  --album-photo-top: 3.8462%;
+  --album-photo-width: 89.0909%;
+  --album-photo-height: 92.3077%;
+  --rsvp-button-left: 21.1497%;
+  --rsvp-button-top: 74.3084%;
+  --rsvp-button-width: 57.0142%;
+  --rsvp-button-height: 1.6788%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: #00508c;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+  background: #00508c;
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.invitation-shell {
+  width: 100%;
+  min-height: 100svh;
+  padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  background: #00508c;
+}
+
+.invitation-card {
+  position: relative;
+  width: 100%;
+  max-width: var(--page-width);
+  margin: 0 auto;
+  overflow: hidden;
+  background: #00508c;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+.invitation-design {
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.album-stage {
+  position: absolute;
+  left: var(--album-left);
+  top: var(--album-top);
+  width: var(--album-width);
+  aspect-ratio: var(--album-aspect);
+  height: auto;
+  overflow: visible;
+  background: #ffffff;
+  isolation: isolate;
+}
+
+.album-photo-window {
+  position: absolute;
+  left: var(--album-photo-left);
+  top: var(--album-photo-top);
+  width: var(--album-photo-width);
+  height: var(--album-photo-height);
+  overflow: hidden;
+  border-radius: 2.2% / 1.5%;
+  background: #b8d8e8;
+  z-index: 1;
+}
+
+.album-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  opacity: 0;
+  transform: scale(1.015);
+  transition: opacity 900ms ease, transform 4200ms ease;
+  will-change: opacity, transform;
+}
+
+.album-slide.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.album-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.album-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 5.8%;
+  z-index: 3;
+  display: flex;
+  gap: clamp(2px, 1vw, 6px);
+  transform: translateX(-50%);
+}
+
+.album-dots span {
+  display: block;
+  width: clamp(3px, 1.15vw, 7px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow: 0 0 2px rgba(0, 80, 140, 0.18);
+}
+
+.album-dots span.is-active {
+  background: #ffffff;
+}
+
+.rsvp-design-button {
+  position: absolute;
+  left: var(--rsvp-button-left);
+  top: var(--rsvp-button-top);
+  width: var(--rsvp-button-width);
+  height: var(--rsvp-button-height);
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rsvp-design-button:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 4px;
+}
+
+.rsvp-dialog[hidden] {
+  display: none;
+}
+
+.rsvp-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
+}
+
+.rsvp-dialog__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 31, 63, 0.62);
+  backdrop-filter: blur(3px);
+}
+
+.rsvp-dialog__panel {
+  position: relative;
+  width: min(92vw, 430px);
+  aspect-ratio: 631 / 655;
+  margin: 0;
+  border: 0;
+  background: url("../assets/popup-rsvp.png") center / 100% 100% no-repeat;
+  box-shadow: 0 20px 48px rgba(0, 20, 48, 0.32);
+}
+
+.rsvp-field,
+.rsvp-attendance,
+.rsvp-submit {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.rsvp-name-field {
+  left: 10.46%;
+  top: 15.11%;
+  width: 80.98%;
+  height: 9.77%;
+}
+
+.rsvp-name-input,
+.rsvp-count-select {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 11px;
+  outline: 0;
+  background: #5d9edd;
+  color: #ffffff;
+  font: 400 clamp(16px, 4.9vw, 28px) / 1 Georgia, "Times New Roman", serif;
+}
+
+.rsvp-name-input {
+  padding: 0 7%;
+}
+
+.rsvp-name-input:focus,
+.rsvp-count-select:focus,
+.rsvp-submit:focus-visible,
+.rsvp-radio:focus-within span {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.92), 0 0 0 6px rgba(0, 80, 140, 0.4);
+}
+
+.rsvp-attendance {
+  left: 15.85%;
+  top: 41.22%;
+  width: 70%;
+  height: 6.2%;
+}
+
+.rsvp-radio {
+  position: absolute;
+  top: 0;
+  width: 18%;
+  height: 100%;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rsvp-radio--yes {
+  left: -3.5%;
+}
+
+.rsvp-radio--no {
+  left: 50.1%;
+}
+
+.rsvp-radio input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rsvp-radio span[aria-hidden="true"] {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: clamp(24px, 8vw, 38px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  background: #004f8e;
+}
+
+.rsvp-radio input:checked + span::after {
+  content: "";
+  position: absolute;
+  inset: 22%;
+  border-radius: 50%;
+  background: #ef6aa7;
+}
+
+.rsvp-count-field {
+  left: 10.46%;
+  top: 65.5%;
+  width: 80.98%;
+  height: 9.77%;
+}
+
+.rsvp-count-select {
+  appearance: none;
+  padding: 0 14% 0 7%;
+}
+
+.rsvp-count-field::after {
+  content: "";
+  position: absolute;
+  right: 8.6%;
+  top: 42%;
+  width: 4.25%;
+  aspect-ratio: 1;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  pointer-events: none;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.rsvp-submit {
+  left: 30.74%;
+  top: 82.6%;
+  width: 38.67%;
+  height: 9.77%;
+  border-radius: 8px;
+  background: transparent;
+  color: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rsvp-submit:disabled {
+  cursor: wait;
+}
+
+.rsvp-status {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 1.7%;
+  min-height: 18px;
+  margin: 0;
+  color: #00477f;
+  font: 700 clamp(11px, 3.2vw, 14px) / 1.25 Arial, Helvetica, sans-serif;
+  text-align: center;
+}
+
+body.rsvp-open {
+  overflow: hidden;
+}
+
+@media (min-width: 431px) {
+  .invitation-shell {
+    padding-inline: 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .album-dots {
+    gap: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .album-slide {
+    transition: opacity 1ms linear;
+    transform: none;
+  }
+
+  .album-slide.is-active {
+    transform: none;
+  }
+}
+
+
+
