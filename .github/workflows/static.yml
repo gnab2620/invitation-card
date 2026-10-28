@@ -35,10 +35,10 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Create public Supabase config
         env:
-          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
-          SUPABASE_TABLE: ${{ vars.SUPABASE_TABLE }}
-        run: node -e "const fs=require('node:fs');const url=(process.env.SUPABASE_URL||'').trim();const publishableKey=(process.env.SUPABASE_PUBLISHABLE_KEY||'').trim();const table=(process.env.SUPABASE_TABLE||'wedding_rsvps').trim();if(!url||!publishableKey)throw new Error('Missing SUPABASE_URL or SUPABASE_PUBLISHABLE_KEY');fs.writeFileSync('scripts/supabase-config.js','window.SUPABASE_CONFIG = '+JSON.stringify({url,publishableKey,table},null,2)+';\\n');"
+          SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY || vars.SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_TABLE: ${{ vars.SUPABASE_TABLE || secrets.SUPABASE_TABLE }}
+        run: node -e "const fs=require('node:fs');const url=(process.env.SUPABASE_URL||'').trim();const publishableKey=(process.env.SUPABASE_PUBLISHABLE_KEY||'').trim();const table=(process.env.SUPABASE_TABLE||'wedding_rsvps').trim();if(!url||!publishableKey)throw new Error('Missing SUPABASE_URL or SUPABASE_PUBLISHABLE_KEY');fs.writeFileSync('scripts/supabase-config.js','window.SUPABASE_CONFIG = '+JSON.stringify({url,publishableKey,table},null,2)+';\\n');const indexPath='index.html';const index=fs.readFileSync(indexPath,'utf8').replaceAll('__DEPLOY_VERSION__',process.env.GITHUB_SHA||Date.now().toString());fs.writeFileSync(indexPath,index);"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

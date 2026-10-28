@@ -77,6 +77,10 @@ async function submitRsvp(payload) {
   const config = getPublicSupabaseConfig();
 
   if (!config) {
+    if (window.location.hostname.endsWith("github.io")) {
+      throw new Error("Website chưa tải được cấu hình Supabase. Vui lòng tải lại trang.");
+    }
+
     return fetch("/api/rsvp", {
       method: "POST",
       headers: {
