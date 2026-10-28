@@ -62,6 +62,53 @@ function closeRsvpDialog() {
   rsvpOpenButton?.focus();
 }
 
+function getPublicSupabaseConfig() {
+  const config = window.SUPABASE_CONFIG || {};
+  const url = String(config.url || "").trim().replace(/\/$/, "");
+  const publishableKey = String(config.publishableKey || "").trim();
+  const table = String(config.table || "wedding_rsvps").trim();
+
+  if (!url || !publishableKey || !table) return null;
+
+  return { url, publishableKey, table };
+}
+
+async function submitRsvp(payload) {
+  const config = getPublicSupabaseConfig();
+
+  if (!config) {
+    return fetch("/api/rsvp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+  }
+
+  const headers = {
+    "Content-Type": "application/json",
+    "apikey": config.publishableKey,
+    "Prefer": "return=minimal"
+  };
+
+  // Legacy anon keys are JWTs and can also be used as the bearer token.
+  if (config.publishableKey.startsWith("eyJ")) {
+    headers.Authorization = `Bearer ${config.publishableKey}`;
+  }
+
+  return fetch(`${config.url}/rest/v1/${encodeURIComponent(config.table)}`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      full_name: payload.fullName,
+      attendance: payload.attendance,
+      guest_count: payload.attendance ? payload.guestCount : 0,
+      user_agent: navigator.userAgent || null
+    })
+  });
+}
+
 rsvpOpenButton?.addEventListener("click", openRsvpDialog);
 
 rsvpDialog?.addEventListener("click", (event) => {
@@ -97,18 +144,17 @@ rsvpForm?.addEventListener("submit", async (event) => {
   setRsvpStatus("Đang gửi xác nhận...");
 
   try {
-    const response = await fetch("/api/rsvp", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
+    const response = await submitRsvp(payload);
 
     const result = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(result.message || "Không thể gửi xác nhận.");
+      throw new Error(
+        result.message ||
+        result.error_description ||
+        result.hint ||
+        "Không thể gửi xác nhận."
+      );
     }
 
     setRsvpStatus("Đã gửi xác nhận. Cảm ơn bạn!");
@@ -117,7 +163,7 @@ rsvpForm?.addEventListener("submit", async (event) => {
   } catch (error) {
     const isNetworkError = error instanceof TypeError && error.message === "Failed to fetch";
     const message = isNetworkError
-      ? "Vui lòng mở thiệp qua http://127.0.0.1:4173 để gửi xác nhận."
+      ? "Không thể kết nối máy chủ xác nhận. Vui lòng kiểm tra mạng và thử lại."
       : error.message || "Có lỗi xảy ra, vui lòng thử lại.";
 
     setRsvpStatus(message, true);
