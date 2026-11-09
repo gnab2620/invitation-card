@@ -436,6 +436,7 @@
     </section>
   </main>
 
+    <script src="supabase-config.js?v=__DEPLOY_VERSION__"></script>
     <script>
     window.addEventListener("load", () => {
       window.scrollTo(0, 0);
@@ -446,11 +447,56 @@
     const form = document.getElementById("rsvpForm");
     const rsvpStatus = document.getElementById("rsvpStatus");
 
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
       const data = Object.fromEntries(new FormData(form));
-      localStorage.setItem("wedding-rsvp", JSON.stringify(data));
-      rsvpStatus.textContent = data.guestName.trim() ? "Đã lưu xác nhận tham dự." : "Vui lòng nhập tên của bạn.";
+      const fullName = String(data.guestName || "").trim();
+      if (!fullName) {
+        rsvpStatus.textContent = "Vui lòng nhập tên của bạn.";
+        form.elements.guestName.focus();
+        return;
+      }
+
+      const config = window.SUPABASE_CONFIG || {};
+      const url = String(config.url || "").trim().replace(/\/$/, "");
+      const publishableKey = String(config.publishableKey || "").trim();
+      const table = String(config.table || "wedding_rsvps").trim();
+
+      if (!url || !publishableKey || !table) {
+        localStorage.setItem("wedding-rsvp", JSON.stringify(data));
+        rsvpStatus.textContent = "Đã lưu xác nhận trên thiết bị này.";
+        return;
+      }
+
+      const attending = data.attendance === "Có, tôi sẽ tham dự";
+      const headers = {
+        "Content-Type": "application/json",
+        apikey: publishableKey,
+        Prefer: "return=minimal"
+      };
+      if (publishableKey.startsWith("eyJ")) headers.Authorization = `Bearer ${publishableKey}`;
+
+      try {
+        const response = await fetch(`${url}/rest/v1/${encodeURIComponent(table)}`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            full_name: fullName,
+            attendance: attending,
+            guest_count: attending ? Number.parseInt(data.guestCount, 10) || 1 : 0,
+            user_agent: navigator.userAgent || null
+          })
+        });
+        if (!response.ok) {
+          const result = await response.json().catch(() => ({}));
+          throw new Error(result.message || result.error_description || result.hint || "Không thể gửi xác nhận.");
+        }
+        rsvpStatus.textContent = "Đã gửi xác nhận. Cảm ơn bạn!";
+        form.reset();
+        form.elements.attendance.value = "Có, tôi sẽ tham dự";
+      } catch (error) {
+        rsvpStatus.textContent = error.message || "Có lỗi xảy ra, vui lòng thử lại.";
+      }
     });
 
     document.querySelector(".rsvp-button.gift").addEventListener("click", () => {
