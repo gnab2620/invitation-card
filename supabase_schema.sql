@@ -17,7 +17,7 @@ alter table public.wedding_rsvps enable row level security;
 revoke all on table public.wedding_rsvps from anon, authenticated;
 grant insert (full_name, attendance, guest_count, user_agent)
   on table public.wedding_rsvps
-  to anon;
+  to anon, authenticated;
 
 drop policy if exists "Public guests can submit an RSVP"
   on public.wedding_rsvps;
@@ -25,7 +25,7 @@ drop policy if exists "Public guests can submit an RSVP"
 create policy "Public guests can submit an RSVP"
   on public.wedding_rsvps
   for insert
-  to anon
+  to anon, authenticated
   with check (
     char_length(btrim(full_name)) between 1 and 120
     and (
