@@ -22,12 +22,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,7 +38,7 @@ jobs:
           SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY || vars.SUPABASE_PUBLISHABLE_KEY }}
           SUPABASE_TABLE: ${{ vars.SUPABASE_TABLE || secrets.SUPABASE_TABLE }}
         run: node -e "const fs=require('node:fs');const url=(process.env.SUPABASE_URL||'').trim();const publishableKey=(process.env.SUPABASE_PUBLISHABLE_KEY||'').trim();const table=(process.env.SUPABASE_TABLE||'wedding_rsvps').trim();if(!url||!publishableKey)throw new Error('Missing SUPABASE_URL or SUPABASE_PUBLISHABLE_KEY');fs.writeFileSync('scripts/supabase-config.js','window.SUPABASE_CONFIG = '+JSON.stringify({url,publishableKey,table},null,2)+';\\n');for(const indexPath of ['index.html','table/index.html']){const index=fs.readFileSync(indexPath,'utf8').replaceAll('__DEPLOY_VERSION__',process.env.GITHUB_SHA||Date.now().toString());fs.writeFileSync(indexPath,index);}"
-      - name: Upload artifact
+      - name: Upload Pages artifact
         id: upload
         uses: actions/upload-pages-artifact@v5
         with:
@@ -50,6 +49,18 @@ jobs:
         env:
           PAGES_ARTIFACT_ID: ${{ steps.upload.outputs.artifact_id }}
         run: test -n "$PAGES_ARTIFACT_ID"
+
+  deploy:
+    needs: build
+    permissions:
+      actions: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
