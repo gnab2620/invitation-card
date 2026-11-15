@@ -3,7 +3,8 @@
 Website hỗ trợ hai chế độ:
 
 - Local: `server.cjs` dùng `serviceRoleKey` trong `appsettings.json`.
-- GitHub Pages: trình duyệt gọi Supabase REST bằng publishable key và RLS chỉ cho phép thêm RSVP mới.
+- GitHub Pages: trình duyệt gọi Supabase REST bằng publishable key; RLS cho phép khách thêm RSVP và có thể bật quyền đọc công khai có giới hạn cột cho trang `/table/`.
+- Trang `/table/`: bảng RSVP công khai, đọc bằng publishable key và policy RLS giới hạn các cột được trả về.
 
 Không đưa `serviceRoleKey` hoặc Supabase secret key vào HTML, JavaScript, GitHub Variables hay GitHub Pages.
 
@@ -88,3 +89,13 @@ Sau đó mở `http://127.0.0.1:4173`.
 2. Gửi một RSVP thử nghiệm.
 3. Kiểm tra row mới trong Supabase Dashboard -> Table Editor -> `wedding_rsvps`.
 4. Nếu GitHub Actions báo thiếu cấu hình, kiểm tra chính xác tên variable và secret ở bước 3.
+
+## 6. Bảng RSVP công khai tại `/table/`
+
+Trang `/table/` không yêu cầu đăng nhập. Bảng tự cập nhật mỗi 15 giây, hiển thị tổng phản hồi, tổng khách tham dự (cộng `guest_count` của RSVP đồng ý), số RSVP từ chối và có nút tải CSV.
+
+Để bật quyền đọc, chạy `supabase_public_read_policy.sql` trong Supabase SQL Editor rồi deploy lại GitHub Pages. Policy chỉ cấp quyền đọc các cột được hiển thị (`full_name`, `attendance`, `guest_count`, `created_at`); không cấp quyền đọc `user_agent` hoặc `id`.
+
+**Lưu ý:** khi áp dụng policy này, bất kỳ ai có link website đều có thể xem/tải các tên và thông tin tham dự. Dữ liệu cũng có thể được đọc trực tiếp từ Supabase REST API bằng project URL và publishable key. `noindex` chỉ hạn chế lập chỉ mục trên công cụ tìm kiếm, không tạo bảo vệ truy cập.
+
+Mở `https://gnab2620.github.io/invitation-card/table/` sau khi deploy. Không đưa service role key vào trang hoặc GitHub Pages.

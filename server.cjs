@@ -140,7 +140,11 @@ async function handleRsvp(request, response) {
 
 function serveStatic(request, response) {
   const requestUrl = new URL(request.url, "http://localhost");
-  const pathname = requestUrl.pathname === "/" ? "/index.html" : requestUrl.pathname;
+  const pathname = requestUrl.pathname === "/"
+    ? "/index.html"
+    : ["/table", "/table/"].includes(requestUrl.pathname)
+      ? "/table/index.html"
+      : requestUrl.pathname;
   const decodedPath = decodeURIComponent(pathname);
   const filePath = path.normalize(path.join(rootDir, decodedPath));
   const relativePath = path.relative(rootDir, filePath);

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#00508c">
+  <title>Quản lý xác nhận tham dự</title>
+  <link rel="stylesheet" href="table.css">
+</head>
+<body>
+  <main class="page-shell">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">THIỆP CƯỚI TUẤN LONG &amp; PHƯƠNG THẢO</p>
+        <h1>Xác nhận tham dự</h1>
+        <p class="subtitle">Bảng công khai, tự cập nhật mỗi 15 giây.</p>
+      </div>
+      <a class="back-link" href="../">← Về trang thiệp</a>
+    </header>
+
+    <section class="dashboard" id="dashboard">
+      <div class="toolbar">
+        <p class="message" id="dataMessage" role="status" aria-live="polite">Đang tải dữ liệu…</p>
+        <div class="toolbar-actions">
+          <button class="secondary-button" id="refreshButton" type="button">Cập nhật</button>
+          <button class="secondary-button" id="csvButton" type="button">Tải CSV</button>
+        </div>
+      </div>
+
+      <div class="summary" aria-live="polite">
+        <article class="summary-card"><span>Tổng phản hồi</span><strong id="responseTotal">0</strong></article>
+        <article class="summary-card"><span>Số khách tham dự</span><strong id="attendeeTotal">0</strong></article>
+        <article class="summary-card"><span>Không tham dự</span><strong id="declineTotal">0</strong></article>
+      </div>
+
+      <div class="table-card">
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Họ và tên</th><th>Tham dự</th><th>Số khách</th><th>Thời gian phản hồi</th></tr></thead>
+            <tbody id="rsvpRows"><tr><td class="empty-state" colspan="4">Đang tải dữ liệu…</td></tr></tbody>
+            <tfoot><tr><th colspan="2">Tổng khách tham dự</th><th id="footerAttendeeTotal">0</th><td></td></tr></tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../scripts/supabase-config.js?v=__DEPLOY_VERSION__"></script>
+  <script src="table.js"></script>
+</body>
+</html>
